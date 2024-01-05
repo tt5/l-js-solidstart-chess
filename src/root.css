@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.cursor {
+    pointer-events: none;
+    display:block;
+    position:fixed;
+    overflow:hidden;
+}
+
+
+
