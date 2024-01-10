@@ -5,7 +5,7 @@ import {
   wpawn, wrook, wknight, wbishop, wqueen, wking
 } from "../data/pieces"; 
 import { star } from "../data/star";
-console.log(star[0][0])
+//console.log(star[0][0])
 
 export default function Home() {
 
@@ -31,10 +31,10 @@ export default function Home() {
   var setupPos = [];
   var count = 1
   startPos().map(square => {
-    console.log(square)
+    //console.log(square)
     switch (square) {
       case 'r':
-        console.log("r", square, count)
+        //console.log("r", square, count)
         setupPos.push(brook)
         break;
       case 'n':
@@ -75,7 +75,7 @@ export default function Home() {
         break;
     }
   })
-  console.log(setupPos)
+  //console.log(setupPos)
 
   const  [pos, setPos] = createSignal([
     "", "", "", "", "", "", "", "",
@@ -103,7 +103,8 @@ function handleDragStart(e) {
   e.target.childNodes[0].style.visibility="visible"
   if (!started()) {
     console.log("start")
-    e.target.dataset.from="0-0"
+    //e.target.dataset.from="0-1"
+    e.target.dataset.from=e.target.parentNode.id
   }
   draggedItem = e.target.innerHTML;
   e.target.innerHTML = ''
@@ -126,10 +127,6 @@ function handleDrop(e) {
     onMouseDown={console.log("down")}
       data-from='${e.target.parentNode.id}'
       draggable="true"
-      onDragEnd={handleDragEnd}
-      onDragStart={handleDragStart}
-      onDrop={handleDrop}
-      onDragOver={handleDragOver}
       class="h-full w-full"
   >${data}</div>`
   
@@ -174,7 +171,7 @@ function handleDragOver(e) {
   var x = e.target.parentNode.id.split("-")[0]
   var y = e.target.parentNode.id.split("-")[1]
   setHoverSquare(x * 8 + y * 1)
-  console.log(hoverSquare())
+  //console.log(hoverSquare())
 }
 
 function handleMouseDown(e) {
@@ -184,7 +181,7 @@ function handleMouseDown(e) {
   setActiveSquare(x * 8 + y * 1)
   e.target.childNodes[0].style.visibility="hidden"
   setClicked(true)
-  console.log("mousedown", e.target.childNodes[0].childNodes[0], e.target.parentNode)
+  //console.log("mousedown", e.target.parentNode.id, e.target.childNodes[0].childNodes[0], e.target.parentNode)
 }
 
 function handleMouseUp(e) {
@@ -232,7 +229,7 @@ function handleMouseUp(e) {
                    : 
                     (j % 2) ? "bg-neutral-400" : "bg-white"
                     )
-                     + "  h-20 w-20 border-4"}>
+                     + "  h-20 w-20"}>
                  <div 
                     draggable="true"
                     class="h-full w-full"
