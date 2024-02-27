@@ -9,8 +9,8 @@ import { star } from "../data/star";
 
 export default function Home() {
 
-  const [activeSquare, setActiveSquare] = createSignal(0)
-  const [hoverSquare, setHoverSquare] = createSignal(0)
+  const [activeSquare, setActiveSquare] = createSignal(-1)
+  const [hoverSquare, setHoverSquare] = createSignal(-1)
   const [cursor, setCursor] = createSignal("M50 0 L0 100 L100 100 Z")
   const [cursorPos, setCursorPos] = createSignal({x: 0, y:0})
   const [squareSize, setSquareSize] = createSignal(80)
@@ -140,6 +140,7 @@ function handleDrop(e) {
 
 function handleDragEnd(e) {
   const border = document.getElementById("board").getBoundingClientRect()
+  setActiveSquare(-1)
   setClicked(false)
   if ((e.clientX > border.left) && (e.clientX < border.right) && (e.clientY > border.top) && (e.clientY < border.bottom)) {
     console.log("OK")
@@ -224,11 +225,15 @@ function handleMouseUp(e) {
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
                  class={
-                  ((i % 2) ? 
-                    (j % 2) ? "bg-white" : "bg-neutral-400"
-                   : 
-                    (j % 2) ? "bg-neutral-400" : "bg-white"
+                  (
+                  i*8+j == activeSquare() ? "bg-yellow-200" :
+                  i*8+j == hoverSquare() ? "bg-yellow-500" :
+                    (i % 2 ? 
+                      j % 2 ? "bg-white" : "bg-neutral-400"
+                     : 
+                      j % 2 ? "bg-neutral-400" : "bg-white"
                     )
+                  )
                      + "  h-20 w-20"}>
                  <div 
                     draggable="true"
