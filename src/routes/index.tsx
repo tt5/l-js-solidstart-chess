@@ -5,12 +5,12 @@ import {
   wpawn, wrook, wknight, wbishop, wqueen, wking
 } from "../data/pieces"; 
 import { star } from "../data/star";
-//console.log(star[0][0])
 
 export default function Home() {
 
   const [activeSquare, setActiveSquare] = createSignal(-1)
   const [hoverSquare, setHoverSquare] = createSignal(-1)
+  const [legalSquare, setLegalSquare] = createSignal(Array.from({length: 64}, () => false))
   const [cursor, setCursor] = createSignal("M50 0 L0 100 L100 100 Z")
   const [cursorPos, setCursorPos] = createSignal({x: 0, y:0})
   const [squareSize, setSquareSize] = createSignal(80)
@@ -120,6 +120,7 @@ function handleDragStart(e) {
 function handleDrop(e) {
   setStarted(true)
   setClicked(false)
+  setLegalSquare(Array.from({length: 64}, () => false))
   e.preventDefault();
   var data = e.dataTransfer.getData("text/html");
   data = `
@@ -142,6 +143,7 @@ function handleDragEnd(e) {
   const border = document.getElementById("board").getBoundingClientRect()
   setActiveSquare(-1)
   setClicked(false)
+  setLegalSquare(Array.from({length: 64}, () => false))
   if ((e.clientX > border.left) && (e.clientX < border.right) && (e.clientY > border.top) && (e.clientY < border.bottom)) {
     console.log("OK")
   } else {
@@ -180,6 +182,12 @@ function handleMouseDown(e) {
   var x = e.target.parentNode.id.split("-")[0]
   var y = e.target.parentNode.id.split("-")[1]
   setActiveSquare(x * 8 + y * 1)
+  var legal = Array.from({length: 64}, () => false);
+  for (let i = 0; i<8; i++) {
+    (star[x*8+y*1][i]).map((e) => (legal[e] = true))
+  }
+  
+  setLegalSquare([...legal])
   e.target.childNodes[0].style.visibility="hidden"
   setClicked(true)
   //console.log("mousedown", e.target.parentNode.id, e.target.childNodes[0].childNodes[0], e.target.parentNode)
@@ -187,6 +195,7 @@ function handleMouseDown(e) {
 
 function handleMouseUp(e) {
   e.target.childNodes[0].style.visibility="visible"
+  setLegalSquare(Array.from({length: 64}, () => false))
   setClicked(false)
   console.log("mouseup", e.target.childNodes[0])
 }
@@ -226,6 +235,13 @@ function handleMouseUp(e) {
                     onDragOver={handleDragOver}
                  class={
                   (
+                  legalSquare()[i*8+j] ? 
+                    (i % 2 ? 
+                      j % 2 ? "bg-blue-400" : "bg-blue-500"
+                     : 
+                      j % 2 ? "bg-blue-500" : "bg-blue-400"
+                    )
+                    :
                   i*8+j == activeSquare() ? "bg-yellow-200" :
                   i*8+j == hoverSquare() ? "bg-yellow-500" :
                     (i % 2 ? 
