@@ -89,7 +89,7 @@ export default function Home() {
         setupPos.push(["", ""])
         setupAPos.push('e')
         break;
-    }
+      }
   })
   //console.log(setupPos)
 
@@ -106,26 +106,26 @@ export default function Home() {
     })
   };
 
-let draggedItem = null;
+  let draggedItem = null;
 
-function handleDragStart(e) {
-  
-  e.target.childNodes[0].style.visibility="visible"
-  if (!started()) {
-    //console.log("start")
-    //e.target.dataset.from="0-1"
-    e.target.dataset.from=e.target.parentNode.id
+  function handleDragStart(e) {
+    
+    e.target.childNodes[0].style.visibility="visible"
+    if (!started()) {
+      //console.log("start")
+      //e.target.dataset.from="0-1"
+      e.target.dataset.from=e.target.parentNode.id
+    }
+    draggedItem = e.target.innerHTML;
+    e.target.innerHTML = ''
+    //console.log("start", draggedItem, e.target)
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 1;
+    canvas.getContext("2d");
+
+    e.dataTransfer.setData('text/html', draggedItem)
+    e.dataTransfer.setDragImage(canvas, 999, 999);
   }
-  draggedItem = e.target.innerHTML;
-  e.target.innerHTML = ''
-  //console.log("start", draggedItem, e.target)
-  const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = 1;
-  canvas.getContext("2d");
-
-  e.dataTransfer.setData('text/html', draggedItem)
-  e.dataTransfer.setDragImage(canvas, 999, 999);
-}
 
 function handleDrop(e) {
   setStarted(true)
@@ -183,12 +183,12 @@ function handleDragOver(e) {
   var x = e.target.parentNode.id.split("-")[0]
   var y = e.target.parentNode.id.split("-")[1]
   setHoverSquare(x * 8 + y * 1)
-  console.log("hover", hoverSquare())
+  //console.log("hover", hoverSquare())
 }
 
 function handleMouseDown(e) {
   //e.target.childNodes[0].style.visibility="visible"
-  //setCursor(e.target.childNodes[0].childNodes[0])
+  setCursor(e.target.childNodes[0].childNodes[0])
   var x = e.target.parentNode.id.split("-")[0]
   var y = e.target.parentNode.id.split("-")[1]
   const xy = x * 8 + y * 1
@@ -208,12 +208,12 @@ function handleMouseDown(e) {
   //console.log("mousedown", e.target.parentNode.id, e.target.childNodes[0].childNodes[0], e.target.parentNode)
 }
 
-function handleMouseUp(e) {
-  //e.target.childNodes[0].style.visibility="visible"
-  setLegalSquare(Array.from({length: 64}, () => false))
-  setClicked(false)
-  //console.log("mouseup", e.target.childNodes[0])
-}
+  function handleMouseUp(e) {
+    e.target.childNodes[0].style.visibility="visible"
+    setLegalSquare(Array.from({length: 64}, () => false))
+    setClicked(false)
+    //console.log("mouseup", e.target.childNodes[0])
+  }
 
   return (
     <main
