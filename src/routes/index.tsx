@@ -16,6 +16,7 @@ export default function Home() {
   const [squareSize, setSquareSize] = createSignal(80)
   const [clicked, setClicked] = createSignal(false)
   const [started, setStarted] = createSignal(false)
+  const [whiteMove, setWhiteMove] = createSignal(true)
 
   const [startPos, setStartPos] = createSignal([
     'r','n','b','q','k','b','n','r',
@@ -28,7 +29,9 @@ export default function Home() {
     'R','N','B','Q','K','B','N','R',
   ])
 
+
   var setupPos = [];
+  var setupAPos = [];
   var count = 1
   startPos().map(square => {
     //console.log(square)
@@ -36,59 +39,65 @@ export default function Home() {
       case 'r':
         //console.log("r", square, count)
         setupPos.push(brook)
+        setupAPos.push('r')
         break;
       case 'n':
         setupPos.push(bknight)
+        setupAPos.push('n')
         break;
       case 'b':
         setupPos.push(bbishop)
+        setupAPos.push('b')
         break;
       case 'q':
         setupPos.push(bqueen)
+        setupAPos.push('q')
         break;
       case 'k':
         setupPos.push(bking)
+        setupAPos.push('k')
         break;
       case 'p':
         setupPos.push(bpawn)
+        setupAPos.push('p')
         break;
       case 'R':
         setupPos.push(wrook)
+        setupAPos.push('R')
         break;
       case 'N':
         setupPos.push(wknight)
+        setupAPos.push('N')
         break;
       case 'B':
         setupPos.push(wbishop)
+        setupAPos.push('B')
         break;
       case 'Q':
         setupPos.push(wqueen)
+        setupAPos.push('Q')
         break;
       case 'K':
         setupPos.push(wking)
+        setupAPos.push('K')
         break;
       case 'P':
         setupPos.push(wpawn)
+        setupAPos.push('P')
         break;
       case 'e':
         setupPos.push(["", ""])
+        setupAPos.push('e')
         break;
     }
   })
   //console.log(setupPos)
 
-  const  [pos, setPos] = createSignal([
-    "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "",
-  ])
+  const  [pos, setPos] = createSignal(Array.from({length: 64}, () => ""))
+  const  [aPos, setAPos] = createSignal(Array.from({length: 64}, () => ""))
 
   setPos(setupPos);
+  setAPos(setupAPos);
 
   function handleMouseMove(e: any) {
     setCursorPos({
@@ -100,15 +109,16 @@ export default function Home() {
 let draggedItem = null;
 
 function handleDragStart(e) {
+  
   e.target.childNodes[0].style.visibility="visible"
   if (!started()) {
-    console.log("start")
+    //console.log("start")
     //e.target.dataset.from="0-1"
     e.target.dataset.from=e.target.parentNode.id
   }
   draggedItem = e.target.innerHTML;
   e.target.innerHTML = ''
-  console.log("start", draggedItem, e.target)
+  //console.log("start", draggedItem, e.target)
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = 1;
   canvas.getContext("2d");
@@ -132,11 +142,11 @@ function handleDrop(e) {
   >${data}</div>`
   
   e.target.outerHTML = data;
-  draggedItem=''
+  //draggedItem=''
   var oldPos = pos()
   oldPos[hoverSquare()] = oldPos[activeSquare()]
-  oldPos[activeSquare()] = ["", ""]
-  console.log("drop", data)
+  //oldPos[activeSquare()] = ["", ""]
+  //console.log("drop", data)
 }
 
 function handleDragEnd(e) {
@@ -145,23 +155,22 @@ function handleDragEnd(e) {
   setClicked(false)
   setLegalSquare(Array.from({length: 64}, () => false))
   if ((e.clientX > border.left) && (e.clientX < border.right) && (e.clientY > border.top) && (e.clientY < border.bottom)) {
-    console.log("OK")
+    //console.log("OK")
   } else {
-  var data = e.dataTransfer.getData("text/html");
-  data = `
-    <div
-    onMouseDown={console.log("down")}
-      data-from='${e.target.dataset.from}'
-      draggable="true"
-      onDragEnd={handleDragEnd}
-      onDragStart={handleDragStart}
-      onDrop={handleDrop}
-      onDragOver={handleDragOver}
-      class="h-full w-full"
-  >${data}</div>`
-  document.getElementById(`${e.target.dataset.from}`).innerHTML = data
+    var data = e.dataTransfer.getData("text/html");
+    data = `
+      <div
+        data-from='${e.target.dataset.from}'
+        draggable="true"
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        class="h-full w-full"
+    >${data}</div>`
+    document.getElementById(`${e.target.dataset.from}`).innerHTML = data
   }
-  console.log("end", data, e.target.dataset.from, e.screenX, e.screenY, e.clientX, e.clientY, border)
+  //console.log("end", data, e.target.dataset.from, e.screenX, e.screenY, e.clientX, e.clientY, border)
   e.preventDefault()
 }
 
@@ -174,30 +183,36 @@ function handleDragOver(e) {
   var x = e.target.parentNode.id.split("-")[0]
   var y = e.target.parentNode.id.split("-")[1]
   setHoverSquare(x * 8 + y * 1)
-  //console.log(hoverSquare())
+  console.log("hover", hoverSquare())
 }
 
 function handleMouseDown(e) {
+  //e.target.childNodes[0].style.visibility="visible"
   //setCursor(e.target.childNodes[0].childNodes[0])
   var x = e.target.parentNode.id.split("-")[0]
   var y = e.target.parentNode.id.split("-")[1]
-  setActiveSquare(x * 8 + y * 1)
+  const xy = x * 8 + y * 1
+  setActiveSquare(xy)
+  //console.log("aPos", aPos()[xy], e.target.childNodes[0].childNodes[0])
   var legal = Array.from({length: 64}, () => false);
   for (let i = 0; i<8; i++) {
-    (star[x*8+y*1][i]).map((e) => (legal[e] = true))
+    (star[xy][i]).map((e) => (legal[e] = true))
   }
   
   setLegalSquare([...legal])
-  e.target.childNodes[0].style.visibility="hidden"
+  if (e.target.childNodes[0]) {
+    e.target.childNodes[0].style.visibility="hidden"
+  }
+
   setClicked(true)
   //console.log("mousedown", e.target.parentNode.id, e.target.childNodes[0].childNodes[0], e.target.parentNode)
 }
 
 function handleMouseUp(e) {
-  e.target.childNodes[0].style.visibility="visible"
+  //e.target.childNodes[0].style.visibility="visible"
   setLegalSquare(Array.from({length: 64}, () => false))
   setClicked(false)
-  console.log("mouseup", e.target.childNodes[0])
+  //console.log("mouseup", e.target.childNodes[0])
 }
 
   return (
