@@ -15,7 +15,6 @@ export default function Home() {
   const [cursorPos, setCursorPos] = createSignal({x: 0, y:0})
   const [squareSize, setSquareSize] = createSignal(80)
   const [clicked, setClicked] = createSignal(false)
-  const [started, setStarted] = createSignal(false)
   const [whiteMove, setWhiteMove] = createSignal(true)
 
   const [startPos, setStartPos] = createSignal([
@@ -111,11 +110,7 @@ export default function Home() {
   function handleDragStart(e) {
     
     e.target.childNodes[0].style.visibility="visible"
-    if (!started()) {
-      //console.log("start")
-      //e.target.dataset.from="0-1"
-      e.target.dataset.from=e.target.parentNode.id
-    }
+    e.target.dataset.from=e.target.parentNode.id
     draggedItem = e.target.innerHTML;
     e.target.innerHTML = ''
     //console.log("start", draggedItem, e.target)
@@ -128,7 +123,6 @@ export default function Home() {
   }
 
 function handleDrop(e) {
-  setStarted(true)
   setClicked(false)
   setLegalSquare(Array.from({length: 64}, () => false))
   e.preventDefault();
@@ -162,10 +156,6 @@ function handleDragEnd(e) {
       <div
         data-from='${e.target.dataset.from}'
         draggable="true"
-        onDragEnd={handleDragEnd}
-        onDragStart={handleDragStart}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
         class="h-full w-full"
     >${data}</div>`
     document.getElementById(`${e.target.dataset.from}`).innerHTML = data
